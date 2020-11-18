@@ -11,7 +11,7 @@ func errH(message string, err error){ //error handler
 }
 
 func main(){
-	//region mongoDB
+	//region mongoDB initialization
 	db, ctx, err := database.Connect("mongodb://localhost:27017") //TODO: add config file	
 	errH("Could not initialize MongoDB client",err)
 
@@ -23,4 +23,6 @@ func main(){
 	err = db.Ping()
 	errH("Could not ping database",err)
 	//endregion
+	
+	db.CreateTask("Title of the task", "Short description")
 }

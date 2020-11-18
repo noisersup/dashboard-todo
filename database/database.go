@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+
+	"../models"
 )
 
 type Database struct{	
@@ -58,3 +60,20 @@ func (db *Database) Ping() error {
 
 	return nil
 }
+
+func (db *Database) CreateTask(title string, description string) (*mongo.InsertOneResult, error) {
+	task := models.Task{Title: title, Desc: description}
+	collection := db.Client.Database("dashboard-tasks").Collection("tasks") //TODO: read from config
+
+	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	defer cancel()
+	//TODO: verificate data 
+
+	res, err := collection.InsertOne(ctx,task)
+	if err != nil { return nil,err }
+
+	return res, nil
+}
+
+//TODO: Maybe CreateManyTasks() (for importing etc)?
+
