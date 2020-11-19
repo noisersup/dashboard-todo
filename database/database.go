@@ -5,8 +5,8 @@ import (
 	"time"
 	"log"
 
-	//"go.mongodb.org/mongo-driver/bson"
-	//"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -77,3 +77,14 @@ func (db *Database) CreateTask(title string, description string) (*mongo.InsertO
 
 //TODO: Maybe CreateManyTasks() (for importing etc)?
 
+func (db *Database) RemoveTask(id string) (*mongo.DeleteResult, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	collection := db.Client.Database("dashboard-tasks").Collection("tasks")
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil { return nil,err }
+
+	return collection.DeleteOne(ctx, bson.M{"_id": objectId})
+}

@@ -4,6 +4,8 @@ import(
 	"log"
 
 	"./database"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func errH(message string, err error){ //error handler
@@ -24,5 +26,11 @@ func main(){
 	errH("Could not ping database",err)
 	//endregion
 	
-	db.CreateTask("Title of the task", "Short description")
+	result, err := db.CreateTask("Title of the task", "Short description")
+	errH("Failed to create a task",err)
+	log.Printf("Task no. %s added.",result.InsertedID.(primitive.ObjectID).Hex())
+
+	delResult, err := db.RemoveTask(result.InsertedID.(primitive.ObjectID).Hex())
+	errH("Failed to remove a task",err)
+	log.Printf("%d task removed.",delResult.DeletedCount)
 }
