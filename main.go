@@ -27,10 +27,19 @@ func main(){
 	//endregion
 	
 	result, err := db.CreateTask("Title of the task", "Short description")
+	id := result.InsertedID.(primitive.ObjectID).Hex()
 	errH("Failed to create a task",err)
 	log.Printf("Task no. %s added.",result.InsertedID.(primitive.ObjectID).Hex())
+	
+	readResult, err := db.ReadTask(id)
+	errH("Failed to read a task",err)
+	log.Printf("%+v\n",readResult)
 
-	delResult, err := db.RemoveTask(result.InsertedID.(primitive.ObjectID).Hex())
+	delResult, err := db.DeleteTask(id)
 	errH("Failed to remove a task",err)
 	log.Printf("%d task removed.",delResult.DeletedCount)
+
+	readResult, err = db.ReadTask(id)
+	errH("Failed to read a task",err)
+	log.Printf("%+v\n",readResult)
 }
